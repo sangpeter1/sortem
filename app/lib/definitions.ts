@@ -9,21 +9,19 @@ export type User = {
   password: string;
 };
 
-export type Customer = {
+export type Student = {
   id: string;
   name: string;
   email: string;
   image_url: string;
 };
 
-export type Invoice = {
-  id: string;
-  customer_id: string;
-  amount: number;
-  date: string;
-  // In TypeScript, this is called a string union type.
-  // It means that the "status" property can only be one of the two strings: 'pending' or 'paid'.
-  status: 'pending' | 'paid';
+export type Profile = {
+  name: string;
+  period: string;
+  reading_level: number;
+  restricted_students: string[];
+  status: 'active' | 'inactive';
 };
 
 export type Revenue = {
@@ -31,58 +29,59 @@ export type Revenue = {
   revenue: number;
 };
 
-export type LatestInvoice = {
+export type LatestProfile = {
   id: string;
   name: string;
   image_url: string;
-  email: string;
-  amount: string;
+  reading_level: number;
+  period: string;
+  status: 'active' | 'inactive';
 };
 
 // The database returns a number for amount, but we later format it to a string with the formatCurrency function
-export type LatestInvoiceRaw = Omit<LatestInvoice, 'amount'> & {
-  amount: number;
+export type LatestProfileRaw = Omit<LatestProfile, 'period'> & {
+  period: string;
 };
 
-export type InvoicesTable = {
+export type ProfilesTable = {
   id: string;
-  customer_id: string;
+  student_id: string;
   name: string;
-  email: string;
   image_url: string;
-  date: string;
-  amount: number;
-  status: 'pending' | 'paid';
+  period: string;
+  reading_level: number;
+  restricted_students: string[];
+  status: 'active' | 'inactive';
 };
 
-export type CustomersTableType = {
+export type StudentsTableType = {
   id: string;
   name: string;
-  email: string;
-  image_url: string;
-  total_invoices: number;
-  total_pending: number;
-  total_paid: number;
+  total_active: number;
+  total_inactive: number;
 };
 
-export type FormattedCustomersTable = {
+export type FormattedStudentsTable = {
   id: string;
   name: string;
   email: string;
+  period: string;
   image_url: string;
-  total_invoices: number;
-  total_pending: string;
-  total_paid: string;
-};
+  total_active: number;
+  total_inactive: number;};
 
-export type CustomerField = {
+export type StudentField = {
   id: string;
   name: string;
 };
 
-export type InvoiceForm = {
+export type ProfileForm = {
   id: string;
-  customer_id: string;
-  amount: number;
-  status: 'pending' | 'paid';
+  student_id: string;
+  restricted_students: string[];
+  period: string;
+  reading_level: number;
+  status: 'active' | 'inactive';
 };
+
+export type Group = { id: string; student_id: string; reading_level: number; status: string; restricted_student_id: string | null };

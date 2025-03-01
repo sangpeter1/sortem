@@ -1,43 +1,43 @@
 'use client';
 
-import { CustomerField, InvoiceForm } from '@/app/lib/definitions';
+import { StudentField, ProfileForm } from '@/app/lib/definitions';
 import {
   CheckIcon,
   ClockIcon,
-  CurrencyDollarIcon,
   UserCircleIcon,
+  UsersIcon,
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { Button } from '@/app/ui/button';
 
-export default function EditInvoiceForm({
-  invoice,
-  customers,
+export default function EditProfileForm({
+  profile,
+  students,
 }: {
-  invoice: InvoiceForm;
-  customers: CustomerField[];
+  profile: ProfileForm;
+  students: StudentField[];
 }) {
   return (
     <form>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
-        {/* Customer Name */}
+        {/* Student Name */}
         <div className="mb-4">
-          <label htmlFor="customer" className="mb-2 block text-sm font-medium">
-            Choose customer
+          <label htmlFor="student" className="mb-2 block text-sm font-medium">
+            Choose student
           </label>
           <div className="relative">
             <select
-              id="customer"
-              name="customerId"
+              id="student"
+              name="studentId"
               className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-              defaultValue={invoice.customer_id}
+              defaultValue={profile.student_id}
             >
               <option value="" disabled>
-                Select a customer
+                Select a student
               </option>
-              {customers.map((customer) => (
-                <option key={customer.id} value={customer.id}>
-                  {customer.name}
+              {students.map((student) => (
+                <option key={student.id} value={student.id}>
+                  {student.name}
                 </option>
               ))}
             </select>
@@ -45,64 +45,107 @@ export default function EditInvoiceForm({
           </div>
         </div>
 
-        {/* Invoice Amount */}
+        {/* Reading Level */}
         <div className="mb-4">
-          <label htmlFor="amount" className="mb-2 block text-sm font-medium">
-            Choose an amount
+          <label htmlFor="readingLevel" className="mb-2 block text-sm font-medium">
+            Reading Level
           </label>
           <div className="relative mt-2 rounded-md">
             <div className="relative">
               <input
-                id="amount"
-                name="amount"
+                id="readingLevel"
+                name="readingLevel"
                 type="number"
-                step="0.01"
-                defaultValue={invoice.amount}
-                placeholder="Enter USD amount"
+                step="1"
+                defaultValue={profile.reading_level}
+                placeholder="Enter reading level"
                 className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
               />
-              <CurrencyDollarIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
             </div>
           </div>
         </div>
 
-        {/* Invoice Status */}
+        {/* Restricted Students */}
+        <div className="mb-4">
+          <label htmlFor="restrictedStudents" className="mb-2 block text-sm font-medium">
+            Restricted Students
+          </label>
+          <div className="relative">
+            <select
+              id="restrictedStudents"
+              name="restrictedStudents"
+              className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+              multiple
+              defaultValue={profile.restricted_students}
+            >
+              {students.map((student) => (
+                <option key={student.id} value={student.id}>
+                  {student.name}
+                </option>
+              ))}
+            </select>
+            <UsersIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+          </div>
+        </div>
+
+        {/* Period */}
+        <div className="mb-4">
+          <label htmlFor="period" className="mb-2 block text-sm font-medium">
+            Choose Period
+          </label>
+          <div className="relative">
+            <select
+              id="period"
+              name="period"
+              className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+              defaultValue={profile.period}
+            >
+              <option value="" disabled>
+                Select a period
+              </option>
+              {/* Add your period options here */}
+            </select>
+            <ClockIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+          </div>
+        </div>
+
+        {/* Profile Status */}
         <fieldset>
           <legend className="mb-2 block text-sm font-medium">
-            Set the invoice status
+            Set the profile status
           </legend>
           <div className="rounded-md border border-gray-200 bg-white px-[14px] py-3">
             <div className="flex gap-4">
               <div className="flex items-center">
                 <input
-                  id="pending"
+                  id="active"
                   name="status"
                   type="radio"
-                  value="pending"
-                  defaultChecked={invoice.status === 'pending'}
+                  value="active"
+                  defaultChecked={profile.status === 'active'}
                   className="h-4 w-4 cursor-pointer border-gray-300 bg-gray-100 text-gray-600 focus:ring-2"
                 />
                 <label
-                  htmlFor="pending"
+                  htmlFor="active"
                   className="ml-2 flex cursor-pointer items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600"
                 >
-                  Pending <ClockIcon className="h-4 w-4" />
+                  Active <CheckIcon className="h-4 w-4" />
                 </label>
               </div>
               <div className="flex items-center">
                 <input
-                  id="paid"
+                  id="inactive"
                   name="status"
                   type="radio"
-                  value="paid"
-                  defaultChecked={invoice.status === 'paid'}
+                  value="inactive"
+                  defaultChecked={profile.status === 'inactive'}
                   className="h-4 w-4 cursor-pointer border-gray-300 bg-gray-100 text-gray-600 focus:ring-2"
                 />
                 <label
-                  htmlFor="paid"
-                  className="ml-2 flex cursor-pointer items-center gap-1.5 rounded-full bg-green-500 px-3 py-1.5 text-xs font-medium text-white"
+                  htmlFor="inactive"
+                  className="ml-2 flex cursor-pointer items-center gap-1.5 rounded-full bg-red-500 px-3 py-1.5 text-xs font-medium text-white"
                 >
-                  Paid <CheckIcon className="h-4 w-4" />
+                  Inactive <CheckIcon className="h-4 w-4" />
                 </label>
               </div>
             </div>
@@ -111,12 +154,12 @@ export default function EditInvoiceForm({
       </div>
       <div className="mt-6 flex justify-end gap-4">
         <Link
-          href="/dashboard/invoices"
+          href="/dashboard/profiles"
           className="flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200"
         >
           Cancel
         </Link>
-        <Button type="submit">Edit Invoice</Button>
+        <Button type="submit">Edit Profile</Button>
       </div>
     </form>
   );

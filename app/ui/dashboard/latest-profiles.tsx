@@ -2,25 +2,28 @@ import { ArrowPathIcon } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
 import Image from 'next/image';
 import { lusitana } from '@/app/ui/fonts';
-import { LatestInvoice } from '@/app/lib/definitions';
-export default async function LatestInvoices({
-  latestInvoices,
-}: {
-  latestInvoices: LatestInvoice[];
-}) {
+import { LatestProfile } from '@/app/lib/definitions';
+import { fetchLatestProfiles } from '@/app/lib/data';
+
+export default async function LatestProfiles() {
+  const latestProfiles = await fetchLatestProfiles();
+  if (!latestProfiles || latestProfiles.length === 0) {
+    return <p className="mt-4 text-gray-400">No data available.</p>;
+  }
+
   return (
     <div className="flex w-full flex-col md:col-span-4">
       <h2 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>
-        Latest Invoices
+        Latest Profiles
       </h2>
       <div className="flex grow flex-col justify-between rounded-xl bg-gray-50 p-4">
         {/* NOTE: Uncomment this code in Chapter 7 */}
 
-        {/* <div className="bg-white px-6">
-          {latestInvoices.map((invoice, i) => {
+        <div className="bg-white px-6">
+          {latestProfiles.map((profile, i) => {
             return (
               <div
-                key={invoice.id}
+                key={profile.id}
                 className={clsx(
                   'flex flex-row items-center justify-between py-4',
                   {
@@ -29,31 +32,21 @@ export default async function LatestInvoices({
                 )}
               >
                 <div className="flex items-center">
-                  <Image
-                    src={invoice.image_url}
-                    alt={`${invoice.name}'s profile picture`}
-                    className="mr-4 rounded-full"
-                    width={32}
-                    height={32}
-                  />
                   <div className="min-w-0">
                     <p className="truncate text-sm font-semibold md:text-base">
-                      {invoice.name}
-                    </p>
-                    <p className="hidden text-sm text-gray-500 sm:block">
-                      {invoice.email}
+                      {profile.name}
                     </p>
                   </div>
                 </div>
                 <p
                   className={`${lusitana.className} truncate text-sm font-medium md:text-base`}
                 >
-                  {invoice.amount}
+                  {profile.reading_level}
                 </p>
               </div>
             );
           })}
-        </div> */}
+        </div>
         <div className="flex items-center pb-2 pt-6">
           <ArrowPathIcon className="h-5 w-5 text-gray-500" />
           <h3 className="ml-2 text-sm text-gray-500 ">Updated just now</h3>

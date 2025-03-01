@@ -1,83 +1,57 @@
 import postgres from 'postgres';
 import {
-  CustomerField,
-  CustomersTableType,
-  InvoiceForm,
-  InvoicesTable,
-  LatestInvoiceRaw,
-  Revenue,
+  StudentField,
+  StudentsTableType,
+  ProfileForm,
+  ProfilesTable,
+  LatestProfileRaw,
+  Profile,
 } from './definitions';
-import { formatCurrency } from './utils';
+import { profile } from 'console';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
-export async function fetchRevenue() {
+export async function fetchLatestProfiles() {
   try {
-    // Artificially delay a response for demo purposes.
-    // Don't do this in production :)
-
-    // console.log('Fetching revenue data...');
-    // await new Promise((resolve) => setTimeout(resolve, 3000));
-
-    const data = await sql<Revenue[]>`SELECT * FROM revenue`;
-
-    // console.log('Data fetch completed after 3 seconds.');
+    const data = await sql<LatestProfileRaw[]>`
+      SELECT profiles.id, profiles.reading_level, students.name, profiles.period, profiles.status
+      FROM profiles
+      JOIN students ON profiles.student_id = students.id
+      ORDER BY students.name DESC
+      LIMIT 5`;
 
     return data;
   } catch (error) {
     console.error('Database Error:', error);
-    throw new Error('Failed to fetch revenue data.');
-  }
-}
-
-export async function fetchLatestInvoices() {
-  try {
-    const data = await sql<LatestInvoiceRaw[]>`
-      SELECT invoices.amount, customers.name, customers.image_url, customers.email, invoices.id
-      FROM invoices
-      JOIN customers ON invoices.customer_id = customers.id
-      ORDER BY invoices.date DESC
-      LIMIT 5`;
-
-    const latestInvoices = data.map((invoice) => ({
-      ...invoice,
-      amount: formatCurrency(invoice.amount),
-    }));
-    return latestInvoices;
-  } catch (error) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch the latest invoices.');
+    throw new Error('Failed to fetch the latest profiles.');
   }
 }
 
 export async function fetchCardData() {
   try {
-    // You can probably combine these into a single SQL query
-    // However, we are intentionally splitting them to demonstrate
-    // how to initialize multiple queries in parallel with JS.
-    const invoiceCountPromise = sql`SELECT COUNT(*) FROM invoices`;
-    const customerCountPromise = sql`SELECT COUNT(*) FROM customers`;
-    const invoiceStatusPromise = sql`SELECT
-         SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END) AS "paid",
-         SUM(CASE WHEN status = 'pending' THEN amount ELSE 0 END) AS "pending"
-         FROM invoices`;
+    const profileCountPromise = sql`SELECT COUNT(*) FROM profiles`;
+    const studentCountPromise = sql`SELECT COUNT(*) FROM students`;
+    const profileStatusPromise = sql`SELECT
+         SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END) AS "active",
+         SUM(CASE WHEN status = 'inactive' THEN 1 ELSE 0 END) AS "inactive"
+         FROM profiles`;
 
     const data = await Promise.all([
-      invoiceCountPromise,
-      customerCountPromise,
-      invoiceStatusPromise,
+      profileCountPromise,
+      studentCountPromise,
+      profileStatusPromise,
     ]);
 
-    const numberOfInvoices = Number(data[0][0].count ?? '0');
-    const numberOfCustomers = Number(data[1][0].count ?? '0');
-    const totalPaidInvoices = formatCurrency(data[2][0].paid ?? '0');
-    const totalPendingInvoices = formatCurrency(data[2][0].pending ?? '0');
+    const numberOfProfiles = Number(data[0][0].count ?? '0');
+    const numberOfStudents = Number(data[1][0].count ?? '0');
+    const totalActiveProfiles = Number(data[2][0].active ?? '0');
+    const totalInactiveProfiles = Number(data[2][0].inactive ?? '0');
 
     return {
-      numberOfCustomers,
-      numberOfInvoices,
-      totalPaidInvoices,
-      totalPendingInvoices,
+      numberOfProfiles,
+      numberOfStudents,
+      totalActiveProfiles,
+      totalInactiveProfiles,
     };
   } catch (error) {
     console.error('Database Error:', error);
@@ -86,133 +60,139 @@ export async function fetchCardData() {
 }
 
 const ITEMS_PER_PAGE = 6;
-export async function fetchFilteredInvoices(
+export async function fetchFilteredProfiles(
   query: string,
   currentPage: number,
 ) {
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
   try {
-    const invoices = await sql<InvoicesTable[]>`
+    const profiles = await sql<ProfilesTable[]>`
       SELECT
-        invoices.id,
-        invoices.amount,
-        invoices.date,
-        invoices.status,
-        customers.name,
-        customers.email,
-        customers.image_url
-      FROM invoices
-      JOIN customers ON invoices.customer_id = customers.id
+        profiles.id,
+        profiles.reading_level,
+        profiles.status,
+        profiles.period,
+        students.name,
+        restricted_students
+      FROM profiles
+      JOIN students ON profiles.student_id = students.id
+      LEFT JOIN profile_restrictions ON profiles.id = profile_restrictions.profile_id
+      LEFT JOIN students AS restricted_students ON profile_restrictions.restricted_student_id = restricted_students.id
       WHERE
-        customers.name ILIKE ${`%${query}%`} OR
-        customers.email ILIKE ${`%${query}%`} OR
-        invoices.amount::text ILIKE ${`%${query}%`} OR
-        invoices.date::text ILIKE ${`%${query}%`} OR
-        invoices.status ILIKE ${`%${query}%`}
-      ORDER BY invoices.date DESC
+        students.name ILIKE ${`%${query}%`} OR
+        profiles.reading_level::text ILIKE ${`%${query}%`} OR
+        profiles.period::text ILIKE ${`%${query}%`} OR
+        restricted_students.name ILIKE ${`%${query}%`} OR
+        profiles.status ILIKE ${`%${query}%`}
+      GROUP BY profiles.id, students.name
+      ORDER BY students.name DESC
       LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
     `;
 
-    return invoices;
+    return profiles;
   } catch (error) {
     console.error('Database Error:', error);
-    throw new Error('Failed to fetch invoices.');
+    throw new Error('Failed to fetch profiles.');
   }
 }
 
-export async function fetchInvoicesPages(query: string) {
+export async function fetchProfilesPages(query: string) {
   try {
     const data = await sql`SELECT COUNT(*)
-    FROM invoices
-    JOIN customers ON invoices.customer_id = customers.id
+    FROM profiles
+    JOIN students ON profiles.student_id = students.id
     WHERE
-      customers.name ILIKE ${`%${query}%`} OR
-      customers.email ILIKE ${`%${query}%`} OR
-      invoices.amount::text ILIKE ${`%${query}%`} OR
-      invoices.date::text ILIKE ${`%${query}%`} OR
-      invoices.status ILIKE ${`%${query}%`}
+      students.name ILIKE ${`%${query}%`} OR
+      profiles.status ILIKE ${`%${query}%`}
   `;
 
     const totalPages = Math.ceil(Number(data[0].count) / ITEMS_PER_PAGE);
     return totalPages;
   } catch (error) {
     console.error('Database Error:', error);
-    throw new Error('Failed to fetch total number of invoices.');
+    throw new Error('Failed to fetch total number of profiles.');
   }
 }
 
-export async function fetchInvoiceById(id: string) {
+export async function fetchProfileById(id: string) {
   try {
-    const data = await sql<InvoiceForm[]>`
+    const data = await sql<ProfileForm[]>`
       SELECT
-        invoices.id,
-        invoices.customer_id,
-        invoices.amount,
-        invoices.status
-      FROM invoices
-      WHERE invoices.id = ${id};
+        profiles.id,
+        profiles.student_id,
+        profiles.reading_level,
+        profiles.status
+      FROM profiles
+      WHERE profiles.id = ${id};
     `;
 
-    const invoice = data.map((invoice) => ({
-      ...invoice,
-      // Convert amount from cents to dollars
-      amount: invoice.amount / 100,
-    }));
-
-    return invoice[0];
+    return data[0];
   } catch (error) {
     console.error('Database Error:', error);
-    throw new Error('Failed to fetch invoice.');
+    throw new Error('Failed to fetch profile.');
   }
 }
 
-export async function fetchCustomers() {
+export async function fetchStudents() {
   try {
-    const customers = await sql<CustomerField[]>`
+    const students = await sql<StudentField[]>`
       SELECT
         id,
         name
-      FROM customers
+      FROM students
       ORDER BY name ASC
     `;
 
-    return customers;
+    return students;
   } catch (err) {
     console.error('Database Error:', err);
-    throw new Error('Failed to fetch all customers.');
+    throw new Error('Failed to fetch all students.');
   }
 }
 
-export async function fetchFilteredCustomers(query: string) {
+export async function fetchFilteredStudents(query: string) {
   try {
-    const data = await sql<CustomersTableType[]>`
-		SELECT
-		  customers.id,
-		  customers.name,
-		  customers.email,
-		  customers.image_url,
-		  COUNT(invoices.id) AS total_invoices,
-		  SUM(CASE WHEN invoices.status = 'pending' THEN invoices.amount ELSE 0 END) AS total_pending,
-		  SUM(CASE WHEN invoices.status = 'paid' THEN invoices.amount ELSE 0 END) AS total_paid
-		FROM customers
-		LEFT JOIN invoices ON customers.id = invoices.customer_id
-		WHERE
-		  customers.name ILIKE ${`%${query}%`} OR
-        customers.email ILIKE ${`%${query}%`}
-		GROUP BY customers.id, customers.name, customers.email, customers.image_url
-		ORDER BY customers.name ASC
-	  `;
+    const data = await sql<StudentsTableType[]>`
+        SELECT
+          students.id,
+          students.name,
+          COUNT(profiles.id) AS total_profiles,
+          SUM(CASE WHEN students.status = 'active' THEN 1 ELSE 0 END) AS total_active,
+          SUM(CASE WHEN students.status = 'inactive' THEN 1 ELSE 0 END) AS total_inactive
+        FROM students
+        LEFT JOIN profiles ON students.id = profiles.student_id
+        WHERE
+          students.name ILIKE ${`%${query}%`}
+        GROUP BY students.id, students.name
+        ORDER BY students.name ASC
+      `;
 
-    const customers = data.map((customer) => ({
-      ...customer,
-      total_pending: formatCurrency(customer.total_pending),
-      total_paid: formatCurrency(customer.total_paid),
-    }));
-
-    return customers;
+    return data;
   } catch (err) {
     console.error('Database Error:', err);
-    throw new Error('Failed to fetch customer table.');
+    throw new Error('Failed to fetch student table.');
   }
 }
+
+async function groupStudentsByPeriod(period_name: string, num_groups: number) {
+  const profiles: Profile[] = await sql<Profile[]>`
+    SELECT p.id, p.student_id, p.reading_level, p.status, pr.restricted_student_id
+    FROM profiles p
+    LEFT JOIN profile_restrictions pr ON p.id = pr.profile_id
+    WHERE p.period_name = ${period_name} AND p.status = 'active'
+    ORDER BY p.reading_level DESC
+  `;
+
+   type Group = Profile[];
+    // Implement your grouping logic here
+    // For simplicity, this example just returns the profiles sorted by reading_level
+    const groups: Group[] = Array.from({ length: num_groups }, () => []);
+    console.log(profiles)
+    profiles.forEach((profile, index) => {
+      groups[index % num_groups].push(profile);
+    });
+  
+    return groups;
+  }
+
