@@ -1,7 +1,7 @@
-import Pagination from '@/app/ui/students/pagination';
+import Pagination from '@/app/ui/profiles/pagination';
 import Search from '@/app/ui/search';
-import Table from '@/app/ui/students/table';
-import { AddProfile } from '@/app/ui/students/buttons';
+import Table from '@/app/ui/profiles/table';
+import { AddProfile } from '@/app/ui/profiles/buttons';
 import { lusitana } from '@/app/ui/fonts';
 import { ProfilesTableSkeleton } from '@/app/ui/skeletons';
 import { Suspense } from 'react';

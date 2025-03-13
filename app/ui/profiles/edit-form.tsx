@@ -1,6 +1,6 @@
 'use client';
 
-import { StudentField, ProfileForm } from '@/app/lib/definitions';
+import { Profile, ProfileForm } from '@/app/lib/definitions';
 import {
   CheckIcon,
   ClockIcon,
@@ -9,14 +9,17 @@ import {
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { Button } from '@/app/ui/button';
+import { updateProfile } from '@/app/lib/actions';
 
 export default function EditProfileForm({
   profile,
-  students,
+  profiles,
 }: {
   profile: ProfileForm;
-  students: StudentField[];
-}) {
+  profiles: Profile[];
+}) 
+  const updateProfileWithId = updateProfile.bind(null, profile.id);
+{
   return (
     <form>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
@@ -35,7 +38,7 @@ export default function EditProfileForm({
               <option value="" disabled>
                 Select a student
               </option>
-              {students.map((student) => (
+              {profiles.map((student) => (
                 <option key={student.id} value={student.id}>
                   {student.name}
                 </option>
@@ -78,7 +81,7 @@ export default function EditProfileForm({
               multiple
               defaultValue={profile.restricted_students}
             >
-              {students.map((student) => (
+              {profiles.map((student) => (
                 <option key={student.id} value={student.id}>
                   {student.name}
                 </option>

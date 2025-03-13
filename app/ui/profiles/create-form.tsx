@@ -1,4 +1,4 @@
-import { StudentField } from '@/app/lib/definitions';
+import { Profile } from '@/app/lib/definitions';
 import Link from 'next/link';
 import {
   ClockIcon,
@@ -12,7 +12,7 @@ import { Button } from '@/app/ui/button';
 import { addProfile } from '@/app/lib/actions';
 
 
-export default function Form({ students }: { students: StudentField[] }) {
+export default function Form({ profiles }: { profiles: Profile[] }) {
   return (
     <form action={addProfile}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
@@ -31,7 +31,7 @@ export default function Form({ students }: { students: StudentField[] }) {
               <option value="" disabled>
                 Select a student
               </option>
-              {students.map((student) => (
+              {profiles.map((student) => (
                 <option key={student.id} value={student.id}>
                   {student.name}
                 </option>
@@ -56,9 +56,9 @@ export default function Form({ students }: { students: StudentField[] }) {
               <option value="" disabled>
                 Select students
               </option>
-              {students.map((student) => (
-                <option key={student.id} value={student.id}>
-                  {student.name}
+              {profiles.map((profile) => (
+                <option key={profile.id} value={profile.id}>
+                  {profile.name}
                 </option>
               ))}
             </select>

@@ -1,9 +1,9 @@
-import Form from '@/app/ui/students/create-form';
-import Breadcrumbs from '@/app/ui/students/breadcrumbs';
-import { fetchStudents } from '@/app/lib/data';
+import Form from '@/app/ui/profiles/create-form';
+import Breadcrumbs from '@/app/ui/profiles/breadcrumbs';
+import { fetchProfiles } from '@/app/lib/data';
  
 export default async function Page() {
-  const students = await fetchStudents();
+  const profiles = await fetchProfiles();
  
   return (
     <main>
@@ -17,7 +17,7 @@ export default async function Page() {
           },
         ]}
       />
-      <Form students={students} />
+      <Form profiles={profiles} />
     </main>
   );
 }

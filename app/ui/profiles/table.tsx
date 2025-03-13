@@ -1,8 +1,8 @@
-import { UpdateProfile, DeleteProfile } from '@/app/ui/students/buttons';
-import ProfileStatus from '@/app/ui/students/status';
+import { UpdateProfile, DeleteProfile } from '@/app/ui/profiles/buttons';
+import ProfileStatus from '@/app/ui/profiles/status';
 import { fetchFilteredProfiles } from '@/app/lib/data';
 
-export default async function StudentsTable({
+export default async function StudentProfilesTable({
   query,
   currentPage,
 }: {
@@ -64,7 +64,7 @@ export default async function StudentsTable({
             </thead>
             <tbody className="bg-white">
               {profiles?.map((profile) => {
-                console.log('Restricted Students:', profile.restricted_students);
+                profile.restricted_students.length === 1 && console.log(profile.restricted_students)
                 return (
                   <tr
                     key={profile.id}
@@ -77,7 +77,7 @@ export default async function StudentsTable({
                       {profile.period}
                     </td>
                     <td className="whitespace-nowrap px-3 py-3">
-                      {profile.restricted_students?.join(', ')}
+                      {profile.restricted_students?.length === 0 ? 'None' : profile.restricted_students.join(', ')}
                     </td>
                     <td className="whitespace-nowrap px-3 py-3">
                       {profile.reading_level}

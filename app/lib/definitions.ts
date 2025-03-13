@@ -17,6 +17,7 @@ export type Student = {
 };
 
 export type Profile = {
+  id: string;
   name: string;
   period: string;
   reading_level: number;

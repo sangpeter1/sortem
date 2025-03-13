@@ -1,3 +1,5 @@
+import RosterManager from "./dashboard/roster-manager";
+
 // Loading animation
 const shimmer =
   'before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/60 before:to-transparent';
@@ -5,7 +7,7 @@ const shimmer =
 export function CardSkeleton() {
   return (
     <div
-      className={`${shimmer} relative overflow-hidden rounded-xl bg-gray-100 p-2 shadow-sm`}
+      className={`${shimmer} md:col-span-1 relative overflow-hidden rounded-xl bg-gray-100 p-2 shadow-sm`}
     >
       <div className="flex p-4">
         <div className="h-5 w-5 rounded-md bg-gray-200" />
@@ -20,12 +22,14 @@ export function CardSkeleton() {
 
 export function CardsSkeleton() {
   return (
-    <>
+  <div className="grid md:grid-cols-2">
+    <div className="md:col-span-1">
       <CardSkeleton />
-      <CardSkeleton />
-      <CardSkeleton />
-      <CardSkeleton />
-    </>
+      </div>
+    <div className="md:col-span-1">
+    <CardSkeleton />
+    </div>
+    </div> 
   );
 }
 
@@ -86,18 +90,9 @@ export default function DashboardSkeleton() {
   return (
     <>
       <div
-        className={`${shimmer} relative mb-4 h-8 w-36 overflow-hidden rounded-md bg-gray-100`}
+        className={`${shimmer} relative mb-4 h-8 w-full overflow-hidden rounded-md bg-gray-100`}
       />
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        <CardSkeleton />
-        <CardSkeleton />
-        <CardSkeleton />
-        <CardSkeleton />
-      </div>
-      <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-4 lg:grid-cols-8">
-        <RevenueChartSkeleton />
-        <LatestProfilesSkeleton />
-      </div>
+        <RosterManagerSkeleton />
     </>
   );
 }
@@ -211,6 +206,87 @@ export function ProfilesTableSkeleton() {
             </tbody>
           </table>
         </div>
+      </div>
+    </div>
+  );
+}
+
+export function RosterSkeleton() {
+  const skeletonRows = Array.from({ length: 10 }, (_, index) => (
+    <tr key={index} className={index % 2 === 0 ? 'bg-gray-50' : ''}>
+      <td className="px-1 py-4 whitespace-nowrap text-right">
+        <div className="h-4 w-4 bg-gray-200 rounded"></div>
+      </td>
+      <td className="px-2 py-4 whitespace-nowrap">
+        <div className="h-4 w-24 bg-gray-200 rounded"></div>
+      </td>
+      <td className="px-2 py-4 whitespace-nowrap">
+        <div className="flex items-center justify-between">
+          <div className="flex flex-wrap gap-1 w-36">
+            <div className="h-4 w-16 bg-gray-200 rounded"></div>
+            <div className="h-4 w-16 bg-gray-200 rounded"></div>
+          </div>
+          <div className="h-4 w-4 bg-gray-200 rounded"></div>
+        </div>
+      </td>
+    </tr>
+  ));
+
+  return (
+    <div>
+      <h2 className="text-lg mb-4 text-center">{'Period 1'}</h2>
+      <div className="overflow-y-auto h-screen">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-1 py-4 text-left text-xs font-medium text-gray-500 tracking-wider h-3">
+              </th>
+              <th className="px-2 py-4 text-left text-xs font-medium text-gray-500 tracking-wider h-3">
+                Name
+              </th>
+              <th className="px-2 py-4 text-left text-xs font-medium text-gray-500 tracking-wider h-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex flex-nowrap px-0 py-0 m-0 text-xs">
+                    Restricted Students
+                  </div>
+                </div>
+              </th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {skeletonRows}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+export function RosterManagerSkeleton() {
+  return (
+    <div className={`grid gap-4 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-7`}>
+      <div className="md:col-span-5">
+        <CardsSkeleton />
+        <GroupsSkeleton />
+      </div>
+      <div className="md:col-span-2">
+        <RosterSkeleton />
+      </div>
+    </div>
+  );
+}
+
+export  function GroupsSkeleton() {
+
+  return (
+    <div className="flex-col space-y-4 h-screen">
+      <div className="flex items-center space-x-4">
+        <div className="form-select mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-200 h-10"></div>
+        <div className="rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 h-10 w-20"></div>
+        <div className="rounded-md bg-gray-500 px-4 py-2 text-white hover:bg-gray-600 h-10 w-20"></div>
+      </div>
+      <div className={`${shimmer} relative overflow-y-auto rounded-xl bg-gray-100 h-96 w-full p-2 pb-4 mb-4 shadow-sm`}>
+        <div className="h-96" />
       </div>
     </div>
   );

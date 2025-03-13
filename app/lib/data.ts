@@ -13,12 +13,26 @@ const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
 export async function fetchLatestProfiles() {
   try {
-    const data = await sql<LatestProfileRaw[]>`
+    const data = await sql<Profile[]>`
       SELECT profiles.id, profiles.reading_level, students.name, profiles.period, profiles.status
       FROM profiles
       JOIN students ON profiles.student_id = students.id
-      ORDER BY students.name DESC
-      LIMIT 5`;
+      ORDER BY students.name DESC`
+    
+    return data;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch the latest profiles.');
+  }
+}
+
+export async function fetchProfiles() {
+  try {
+    const data = await sql<Profile[]>`
+      SELECT profiles.id, profiles.reading_level, students.name, profiles.period, profiles.status
+      FROM profiles
+      JOIN students ON profiles.student_id = students.id
+      ORDER BY period DESC`;
 
     return data;
   } catch (error) {
@@ -175,7 +189,7 @@ export async function fetchFilteredStudents(query: string) {
   }
 }
 
-async function groupStudentsByPeriod(period_name: string, num_groups: number) {
+export async function groupStudentsByPeriod(period_name: string, num_groups: number) {
   const profiles: Profile[] = await sql<Profile[]>`
     SELECT p.id, p.student_id, p.reading_level, p.status, pr.restricted_student_id
     FROM profiles p

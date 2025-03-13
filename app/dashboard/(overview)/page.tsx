@@ -1,28 +1,21 @@
-import CardWrapper from '@/app/ui/dashboard/cards';
-import LatestProfiles from '@/app/ui/dashboard/latest-profiles';
 import { lusitana } from '@/app/ui/fonts';
+import RosterManager from '@/app/ui/dashboard/roster-manager';
+import { Profile } from '@/app/lib/definitions';
+import { fetchProfiles } from '@/app/lib/data';
 import { Suspense } from 'react';
-import { RevenueChartSkeleton, LatestProfilesSkeleton, CardsSkeleton } from '@/app/ui/skeletons';
+import { RosterManagerSkeleton } from '@/app/ui/skeletons';
+import { AddProfile } from '@/app/ui/profiles/buttons';
 
 export default async function Page() {
+  const students : Profile [] = await fetchProfiles();
   return (
     <main>
       <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>
         Dashboard
       </h1>
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-      <Suspense fallback={<CardsSkeleton />} >  
-        <CardWrapper />
-      </Suspense>
-      </div>
-      <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-4 lg:grid-cols-8">
-        {/* <Suspense fallback={<RevenueChartSkeleton />}>
-          <RevenueChart />
-        </Suspense> */}
-        <Suspense fallback={<LatestProfilesSkeleton />}>
-          <LatestProfiles />
+        <Suspense fallback={<RosterManagerSkeleton />}>
+          <RosterManager roster={students} />
         </Suspense>
-      </div>
     </main>
   );
 }
