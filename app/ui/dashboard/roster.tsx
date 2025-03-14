@@ -4,6 +4,7 @@ import { fetchProfilesByPeriod } from '@/app/lib/data';
 
 export default async function Roster() {
   const profiles = await fetchProfilesByPeriod();
+  console.log('profiles inside Roster', profiles)
   return (
     <div>
       <h2 className="text-lg mb-4 text-center">{'Period 1'}</h2>

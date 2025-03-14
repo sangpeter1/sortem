@@ -3,7 +3,6 @@ import RosterManager from '@/app/ui/dashboard/roster-manager';
 import { Suspense } from 'react';
 import { RosterManagerSkeleton } from '@/app/ui/skeletons';
 
-export const revalidate = false
 export default function Page() {
   return (
     <main>

@@ -33,7 +33,7 @@ export async function fetchProfilesByPeriod() {
       JOIN students ON profiles.student_id = students.id
       WHERE profiles.period = ${period}
       ORDER BY period DESC`;
-
+    console.log('data inside fetchProfilesByPeriod', data)
     return data;
   } catch (error) {
     console.error('Database Error:', error);
