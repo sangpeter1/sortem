@@ -4,10 +4,8 @@ import {
   StudentsTableType,
   ProfileForm,
   ProfilesTable,
-  LatestProfileRaw,
   Profile,
 } from './definitions';
-import { profile } from 'console';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
@@ -26,12 +24,14 @@ export async function fetchLatestProfiles() {
   }
 }
 
-export async function fetchProfiles() {
+export async function fetchProfilesByPeriod() {
+  const period = 'Period 1';
   try {
     const data = await sql<Profile[]>`
-      SELECT profiles.id, profiles.reading_level, students.name, profiles.period, profiles.status
+      SELECT profiles.id, students.id, students.name, profiles.reading_level, profiles.period, profiles.status
       FROM profiles
       JOIN students ON profiles.student_id = students.id
+      WHERE profiles.period = ${period}
       ORDER BY period DESC`;
 
     return data;

@@ -8,6 +8,7 @@ import postgres from 'postgres';
  
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
  
+
 async function getUser(email: string): Promise<User | undefined> {
   try {
     const user = await sql<User[]>`SELECT * FROM users WHERE email=${email}`;
@@ -31,8 +32,11 @@ export const { auth, signIn, signOut } = NextAuth({
           const { email, password } = parsedCredentials.data;
           const user = await getUser(email);
           if (!user) return null;
+          const passwordsMatch = password === user.password;
+          if (passwordsMatch) return user;
         }
- 
+
+        console.log('Invalid credentials');
         return null;
       },
     }),

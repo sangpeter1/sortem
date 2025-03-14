@@ -1,23 +1,17 @@
 'use client';
+
 import { useState } from 'react';
-import { Profile } from '@/app/lib/definitions';
 import { EyeIcon, EyeSlashIcon, TrashIcon } from '@heroicons/react/24/outline';
-
-interface RosterStudentRowProps {
-  student: Profile;
-  index: number;
-  updateRoster: (studentId: string, updates: Partial<Profile>) => void;
-}
-
-export default function RosterStudentRow({ student, index, updateRoster }: RosterStudentRowProps) {
+import { Profile } from '@/app/lib/definitions';
+export default function RosterStudentRow({student, index}: {student: Profile, index: number}) {
   const [checked, setChecked] = useState(true);
   const [showRestricted, setShowRestricted] = useState(false);
   const [selectedChips, setSelectedChips] = useState<string[]>([]);
 
+
   const handleChange = () => {
     const newChecked = !checked
     setChecked(newChecked);
-    updateRoster(student.id, {status: `${ newChecked === true ? 'active' : 'inactive'}`}  );
   };
 
   const toggleRestricted = () => {
@@ -34,7 +28,6 @@ export default function RosterStudentRow({ student, index, updateRoster }: Roste
     const updatedRestrictedStudents = student.restricted_students.filter(
       restrictedStudent => !selectedChips.includes(restrictedStudent));
       
-    updateRoster(student.id, { restricted_students: updatedRestrictedStudents });
     setSelectedChips([]);
   };
   return (

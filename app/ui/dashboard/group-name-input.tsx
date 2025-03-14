@@ -1,3 +1,4 @@
+'use client';
 import { useState, useEffect } from 'react';
 import { PencilSquareIcon, UsersIcon } from '@heroicons/react/24/solid';
 import { Profile } from '@/app/lib/definitions';
@@ -23,7 +24,9 @@ export default function SortedGroups({ groups, gridColumns } : SortedGroupProps)
     };
 
     useEffect(() => {
+      if (groups) {
         setGroupNames(createdefaultGroupNames(groups));
+      }
     }, [groups])
   return (
     <div className={`grid gap-1 ${gridColumns}`}>

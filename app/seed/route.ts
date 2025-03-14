@@ -14,7 +14,7 @@ async function seedUsers() {
     users.map(
       async (user) => await sql`
         INSERT INTO users (id, name, username, email, password)
-        VALUES (${user.id}, ${user.name}, ${user.username}, ${user.email}, ${user.password})
+        VALUES (${user.id}, ${user.name}, ${password}, ${user.email}, ${user.password})
         ON CONFLICT (id) DO NOTHING;
       `,
     ),

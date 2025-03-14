@@ -260,13 +260,6 @@ const users = [
     email: 'user@nextmail.com',
     password: '123456',
   },
-  {
-    id: uuidv4(),
-    name: 'Zara Pylvainen',
-    username: 'pylvainenz',
-    email: 'zara.pylvainen@gmail.com',
-    password: 'bups1066',
-  }
 ];
 
 export { users, students, profiles };

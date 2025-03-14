@@ -1,7 +1,9 @@
-import { Profile } from '@/app/lib/definitions';
+import { Suspense } from 'react';
 import RosterStudentRow from './roster-student-row';
+import { fetchProfilesByPeriod } from '@/app/lib/data';
 
-export default function Roster({ students, updateRoster }: { students: Profile[], updateRoster: (studentId: string, updates: Partial<Profile>) => void }) {
+export default async function Roster() {
+  const profiles = await fetchProfilesByPeriod();
   return (
     <div>
       <h2 className="text-lg mb-4 text-center">{'Period 1'}</h2>
@@ -24,9 +26,14 @@ export default function Roster({ students, updateRoster }: { students: Profile[]
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {students.map((student, index) => (
-              <RosterStudentRow key={student.id} student={student} index={index} updateRoster={updateRoster} />
-            ))}
+              {profiles.map((student, index) => {
+                return (
+                <Suspense>
+                  <RosterStudentRow student={student} index={index}/>
+                </Suspense>
+                )
+              }                
+              )}
           </tbody>
         </table>
       </div>

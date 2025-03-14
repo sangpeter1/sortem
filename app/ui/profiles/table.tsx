@@ -64,7 +64,6 @@ export default async function StudentProfilesTable({
             </thead>
             <tbody className="bg-white">
               {profiles?.map((profile) => {
-                profile.restricted_students.length === 1 && console.log(profile.restricted_students)
                 return (
                   <tr
                     key={profile.id}

@@ -18,6 +18,7 @@ export type Student = {
 
 export type Profile = {
   id: string;
+  studentId: string;
   name: string;
   period: string;
   reading_level: number;
@@ -78,6 +79,7 @@ export type StudentField = {
 
 export type ProfileForm = {
   id: string;
+  name: string;
   student_id: string;
   restricted_students: string[];
   period: string;

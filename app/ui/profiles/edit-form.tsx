@@ -11,6 +11,7 @@ import Link from 'next/link';
 import { Button } from '@/app/ui/button';
 import { updateProfile } from '@/app/lib/actions';
 
+
 export default function EditProfileForm({
   profile,
   profiles,
@@ -18,10 +19,10 @@ export default function EditProfileForm({
   profile: ProfileForm;
   profiles: Profile[];
 }) 
-  const updateProfileWithId = updateProfile.bind(null, profile.id);
 {
+  const updateProfileWithId = updateProfile.bind(null, profile.id);
   return (
-    <form>
+    <form action={updateProfileWithId}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
         {/* Student Name */}
         <div className="mb-4">

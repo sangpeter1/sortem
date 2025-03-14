@@ -3,11 +3,10 @@ import {
   IdentificationIcon,
   NoSymbolIcon,
   UserGroupIcon,
-  UserIcon,
 } from '@heroicons/react/24/outline';
 import { Profile } from '@/app/lib/definitions';
 import { lusitana } from '@/app/ui/fonts';
-
+import { fetchProfilesByPeriod } from '@/app/lib/data';
 const iconMap = {
   active: HandRaisedIcon,
   students: UserGroupIcon,
@@ -15,11 +14,12 @@ const iconMap = {
   profiles: IdentificationIcon,
 };
 
-export default function CardWrapper({students} : {students: Profile[]}) {
-  const totalActiveProfiles = students?.filter((student) => {
+export default async function CardWrapper() {
+  const profiles : Profile[] = await fetchProfilesByPeriod()
+  const totalActiveProfiles = profiles?.filter((student) => {
     return student.status === 'active';  
   }).length
-  const numberOfStudents = students.length;
+  const numberOfStudents = profiles.length;
 
   return (
     <div className = "grid md:grid-cols-2">

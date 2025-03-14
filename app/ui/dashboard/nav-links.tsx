@@ -17,7 +17,7 @@ const links = [
     href: '/dashboard/hours',
     icon: ClockIcon,
   },
-  { name: 'Students', href: '/dashboard/students', icon: UserGroupIcon },
+  { name: 'Profiles', href: '/dashboard/profiles', icon: UserGroupIcon },
 ];
 
 export default function NavLinks() {

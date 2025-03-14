@@ -1,23 +1,18 @@
+'use client';
 import { useState, useEffect } from 'react';
 import { Profile } from '@/app/lib/definitions';
-import { UsersIcon } from '@heroicons/react/24/outline';
 import SortedGroups from '@/app/ui/dashboard/group-name-input'
 
-interface GroupsProps {
-  students: Profile[];
-}
-
-export default function Groups({ students }: GroupsProps) {
+export default function Groups({profiles}: {profiles: Profile[]}) {
   const [groupSize, setGroupSize] = useState(2);
   const [groups, setGroups] = useState<Profile[][]>([]);
   const [gridColumns, setGridColumns] = useState<string>('grid-cols-4');
-  const [groupNames, setGroupNames] = useState<string[]>([]);
   const [shouldSort, setShouldSort] = useState(false);
 
   // Function to sort students into groups while complying with restrictions
-  const sortStudentsIntoGroups = (students: Profile[], groupSize: number) => {
+  const sortStudentsIntoGroups = (profiles: Profile[], groupSize: number) => {
     const groups: Profile[][] = [];
-    const activeStudents = students.filter(student => student.status === 'active');
+    const activeStudents = profiles.filter(student => student.status === 'active');
     const totalStudents = activeStudents.length;
     const remainder = totalStudents % groupSize;
     const fullGroups = Math.floor(totalStudents / groupSize);
@@ -29,6 +24,7 @@ export default function Groups({ students }: GroupsProps) {
       const j = Math.floor(Math.random() * (i + 1));
       [activeStudents[i], activeStudents[j]] = [activeStudents[j], activeStudents[i]];
     }
+
     const usedStudents = new Set<string>();
 
     // Create a map for quick lookup of restricted students
@@ -41,7 +37,6 @@ export default function Groups({ students }: GroupsProps) {
       if (usedStudents.has(student.id)) continue;
       if(groupSize === 2 && groupCount === fullGroups) continue;
       let group: Profile[] = [student];
-      setGroupNames ((prevGroupNames) => [...prevGroupNames, `Group ${groupCount + 1}`]);
       usedStudents.add(student.id);
 
       for (const otherStudent of activeStudents) {
@@ -97,12 +92,12 @@ export default function Groups({ students }: GroupsProps) {
 
   useEffect(() => {
     if (shouldSort) {
-      const sortedGroups = sortStudentsIntoGroups(students, groupSize);
+      const sortedGroups = sortStudentsIntoGroups(profiles, groupSize);
       setGroups(sortedGroups);
       setGridColumns(`${groupSize === 2 ? 'grid-cols-5' : 'grid-cols-4'}`);
       setShouldSort(false);
     }
-  }, [shouldSort, students, groupSize]);
+  }, [shouldSort, profiles, groupSize]);
 
   return (
     <div className={`flex-col pace-y-4`}>
