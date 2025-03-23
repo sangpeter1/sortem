@@ -76,7 +76,7 @@ export default async function StudentProfilesTable({
                       {profile.period}
                     </td>
                     <td className="whitespace-nowrap px-3 py-3">
-                      {profile.restricted_students?.length === 0 ? 'None' : profile.restricted_students.join(', ')}
+                      {profile.restricted_students?.length === 0 || !profile.restricted_students ? 'None' : profile.restricted_students.join(', ')}
                     </td>
                     <td className="whitespace-nowrap px-3 py-3">
                       {profile.reading_level}

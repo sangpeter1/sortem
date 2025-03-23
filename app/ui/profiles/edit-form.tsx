@@ -1,6 +1,6 @@
 'use client';
 
-import { Profile, ProfileForm } from '@/app/lib/definitions';
+import { ProfileField, ProfileForm } from '@/app/lib/definitions';
 import {
   CheckIcon,
   ClockIcon,
@@ -17,7 +17,7 @@ export default function EditProfileForm({
   profiles,
 }: {
   profile: ProfileForm;
-  profiles: Profile[];
+  profiles: ProfileField[];
 }) 
 {
   const updateProfileWithId = updateProfile.bind(null, profile.id);
@@ -39,11 +39,15 @@ export default function EditProfileForm({
               <option value="" disabled>
                 Select a student
               </option>
-              {profiles.map((student) => (
-                <option key={student.id} value={student.id}>
+              {profiles.map((student) => {
+                if(student.period_id === profile.period_id) {
+                return (
+                  <option key={student.id} value={student.id}>
                   {student.name}
-                </option>
-              ))}
+                  </option>
+                )}
+              })}
+                
             </select>
             <UserCircleIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
           </div>
@@ -82,7 +86,8 @@ export default function EditProfileForm({
               multiple
               defaultValue={profile.restricted_students}
             >
-              {profiles.map((student) => (
+              {profiles.some((student) => (
+                student.id === profile.id &&
                 <option key={student.id} value={student.id}>
                   {student.name}
                 </option>
@@ -102,11 +107,16 @@ export default function EditProfileForm({
               id="period"
               name="period"
               className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-              defaultValue={profile.period}
+              value={profile.period_name}
             >
               <option value="" disabled>
                 Select a period
               </option>
+              <option value="1">1st Period</option>
+              <option value="2">2nd Period</option>
+              <option value="3">3rd Period</option>
+              <option value="4">5th Period</option>
+              <option value="5">6th Period</option>
               {/* Add your period options here */}
             </select>
             <ClockIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
@@ -163,7 +173,7 @@ export default function EditProfileForm({
         >
           Cancel
         </Link>
-        <Button type="submit">Edit Profile</Button>
+        <Button type="submit">Save</Button>
       </div>
     </form>
   );

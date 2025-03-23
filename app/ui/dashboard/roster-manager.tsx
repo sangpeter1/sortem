@@ -7,7 +7,8 @@ import { fetchProfilesByPeriod } from '@/app/lib/data';
 
 export default async function RosterManager() {
   const profiles = await fetchProfilesByPeriod();
-  profiles && console.log(profiles)
+  const assignmentId = '43bd070c-359d-4401-8e73-b6f4a43677e8';
+  const periodId = '4501f912-d990-4b27-a646-92e80b1c9a69';
   return (
     <div className={`grid gap-4 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-7`}>
         <div className="md:col-span-5">
@@ -15,7 +16,7 @@ export default async function RosterManager() {
             <CardWrapper />
           </Suspense>
           <Suspense fallback={<RosterSkeleton />}>
-            <Groups profiles={profiles}/>
+            <Groups students={profiles} assignmentId={assignmentId} periodId={periodId}/>
           </Suspense>
           </div>
 

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { EyeIcon, EyeSlashIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { Profile } from '@/app/lib/definitions';
-export default function RosterStudentRow({student, index}: {student: Profile, index: number}) {
+export default function RosterStudentRow({student, key}: {student: Profile, key: number}) {
   const [checked, setChecked] = useState(true);
   const [showRestricted, setShowRestricted] = useState(false);
   const [selectedChips, setSelectedChips] = useState<string[]>([]);
@@ -25,13 +25,13 @@ export default function RosterStudentRow({student, index}: {student: Profile, in
   };
 
   const handleDeleteSelected = () => {
-    const updatedRestrictedStudents = student.restricted_students.filter(
-      restrictedStudent => !selectedChips.includes(restrictedStudent));
-      
+    // const updatedRestrictedStudents = student.restricted_students.filter(
+    //   restrictedStudent => !selectedChips.includes(restrictedStudent));
+    // setRestrictedStudents(updatedRestrictedStudents);
     setSelectedChips([]);
   };
   return (
-    <tr className={index % 2 === 0 ? 'bg-gray-50' : ''}>
+    <tr key={student.id} className={key % 2 === 0 ? 'bg-gray-50' : ''}>
       <td className="px-1 py-0.5 whitespace-nowrap text-right">
         <input
           type="checkbox"
@@ -47,13 +47,13 @@ export default function RosterStudentRow({student, index}: {student: Profile, in
         <div className="flex w-36 h-full">
             <div className="flex flex-wrap justify-start align-center h-2" >
                 { showRestricted && 
-                    student.restricted_students.map((restrictedStudent, idx) => {
+                    student.restricted_students.map((restrictedStudent) => {
                     const [firstName, lastName] = restrictedStudent.split(' ');
                     const isSelected = selectedChips.includes(restrictedStudent);
                     const chipLabel = `${firstName.charAt(0)}${lastName.charAt(0)}`
                     return (
                         <span
-                        key={idx}
+                        key={student.studentId}
                         onClick={() => handleChipClick(restrictedStudent)}
                         className={`cursor-pointer bg-gray-200 text-gray-800 text-xs font-medium mr-1 mt-0.5 mb-0.5 px-2 py-0.5 rounded-xl ${
                             isSelected ? 'bg-blue-300' : ''

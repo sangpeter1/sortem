@@ -5,6 +5,7 @@
 export type User = {
   id: string;
   name: string;
+  username: string;
   email: string;
   password: string;
 };
@@ -72,9 +73,10 @@ export type FormattedStudentsTable = {
   total_active: number;
   total_inactive: number;};
 
-export type StudentField = {
+export type ProfileField = {
   id: string;
   name: string;
+  period_id: string;
 };
 
 export type ProfileForm = {
@@ -82,7 +84,8 @@ export type ProfileForm = {
   name: string;
   student_id: string;
   restricted_students: string[];
-  period: string;
+  period_name: string;
+  period_id: string;
   reading_level: number;
   status: 'active' | 'inactive';
 };

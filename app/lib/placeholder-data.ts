@@ -254,12 +254,20 @@ const profiles = students.map(student => ({
 
 const users = [
   {
-    id: '410544b2-4001-4271-9855-fec4b6a6442a',
-    name: 'User',
-    username: 'user',
-    email: 'user@nextmail.com',
-    password: '123456',
+    id: uuidv4(),
+    name: 'Admin',
+    username: 'admin',
+    email: 'sang.peterchanmin@gmail.com',
+    password: process.env.ADMIN_PASSWORD,
   },
+  {
+    id: uuidv4(),
+    name: 'Zara Pylvainen',
+    username: 'pylvainenz',
+    email: 'zara.pylvainen@gmail.com',
+    password: process.env.ZARA_PASSWORD,
+  }
+
 ];
 
 export { users, students, profiles };

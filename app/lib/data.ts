@@ -1,6 +1,6 @@
 import postgres from 'postgres';
 import {
-  StudentField,
+  ProfileField,
   StudentsTableType,
   ProfileForm,
   ProfilesTable,
@@ -28,12 +28,22 @@ export async function fetchProfilesByPeriod() {
   const period = 'Period 1';
   try {
     const data = await sql<Profile[]>`
-      SELECT profiles.id, students.id, students.name, profiles.reading_level, profiles.period, profiles.status
+       SELECT 
+        profiles.id,
+        students.id as student_id,
+        students.name AS name,
+        periods.name AS period, 
+        profiles.reading_level, 
+        profiles.status, 
+        ARRAY_AGG(restricted_students.name) AS restricted_students
       FROM profiles
+      JOIN periods ON profiles.period_id = periods.id
       JOIN students ON profiles.student_id = students.id
-      WHERE profiles.period = ${period}
-      ORDER BY period DESC`;
-    console.log('data inside fetchProfilesByPeriod', data)
+      LEFT JOIN profile_restrictions ON profiles.id = profile_restrictions.profile_id
+      LEFT JOIN students AS restricted_students ON profile_restrictions.restricted_student_id = restricted_students.id
+      WHERE periods.name = ${period}
+      GROUP BY profiles.id, students.name, profiles.reading_level, profiles.status, periods.name, students.id, profiles.id
+    `;
     return data;
   } catch (error) {
     console.error('Database Error:', error);
@@ -86,7 +96,7 @@ export async function fetchFilteredProfiles(
         profiles.id,
         profiles.reading_level,
         profiles.status,
-        profiles.period,
+        profiles.period_id,
         students.name,
         restricted_students
       FROM profiles
@@ -96,7 +106,7 @@ export async function fetchFilteredProfiles(
       WHERE
         students.name ILIKE ${`%${query}%`} OR
         profiles.reading_level::text ILIKE ${`%${query}%`} OR
-        profiles.period::text ILIKE ${`%${query}%`} OR
+        profiles.period_id::text ILIKE ${`%${query}%`} OR
         restricted_students.name ILIKE ${`%${query}%`} OR
         profiles.status ILIKE ${`%${query}%`}
       GROUP BY profiles.id, students.name
@@ -135,9 +145,12 @@ export async function fetchProfileById(id: string) {
       SELECT
         profiles.id,
         profiles.student_id,
+        profiles.period_id,
+        periods.name,
         profiles.reading_level,
         profiles.status
       FROM profiles
+      JOIN periods ON profiles.period_id = periods.id
       WHERE profiles.id = ${id};
     `;
 
@@ -148,13 +161,16 @@ export async function fetchProfileById(id: string) {
   }
 }
 
-export async function fetchStudents() {
+export async function fetchProfiles() {
   try {
-    const students = await sql<StudentField[]>`
+    const students = await sql<ProfileField[]>`
       SELECT
-        id,
-        name
-      FROM students
+        students.id,
+        students.name,
+        profiles.period_id
+      FROM profiles
+      JOIN periods ON profiles.period_id = periods.id
+      JOIN students ON profiles.student_id = students.id
       ORDER BY name ASC
     `;
 

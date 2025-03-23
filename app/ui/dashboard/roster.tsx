@@ -29,8 +29,8 @@ export default async function Roster() {
           <tbody className="bg-white divide-y divide-gray-200">
               {profiles.map((student, index) => {
                 return (
-                <Suspense>
-                  <RosterStudentRow student={student} index={index}/>
+                <Suspense key={student.id}>
+                  <RosterStudentRow student={student} key={index}/>
                 </Suspense>
                 )
               }                
